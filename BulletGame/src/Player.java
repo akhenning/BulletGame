@@ -30,6 +30,7 @@ class Player implements Collidable
     double sanic=1;
     Image image=Toolkit.getDefaultToolkit().getImage("naturally.png");
     
+    double speedModifier=1;
     
     public Player(Point2D.Double center)
     {
@@ -66,6 +67,9 @@ class Player implements Collidable
     }    
     public void moveX(double xdirection, double ydirection, boolean shift)
     {                       
+    	xdirection*=speedModifier;
+    	ydirection*=speedModifier;
+    	int max=(int)(35*speedModifier);
     	if (ydirection>0&&touching) {touching=false;move(0,-2);}
         xVelocity+=xdirection/6;
         if (shift)
@@ -73,7 +77,7 @@ class Player implements Collidable
             xVelocity+=xdirection/12;
         }
         
-        if (xVelocity>35||xVelocity<-35)
+        if (xVelocity>max||xVelocity<-max)
         {            
             xVelocity*=.97;
             //xVelocity/=10;
@@ -89,7 +93,7 @@ class Player implements Collidable
             yVelocity+=ydirection/12;
         }
         
-        if (yVelocity>35||yVelocity<-35)
+        if (yVelocity>max||yVelocity<-max)
         {            
             yVelocity*=.97;
             //xVelocity/=10;
@@ -319,25 +323,17 @@ class Player implements Collidable
                 hp=0;
             }
         	vulnerabilityTimer=DrawingPanel.tickCounter+100;
-//            if(type==0||type==1)
-//            {
-//                vulnerabilityTimer=DrawingPanel.tickCounter+100;
-//                hp--;     
-////                if(hp<0)
-////                {
-////                    ded=true;
-////                    hp=0;
-////                }
-//            }
-//            else if (type==3)
-//            {
-//                //Originally something that warped the player
-//            }
             return true;//attack landed
         }
-        return false;//attack missed/invincible
+        return false;//attack missed, i.e. invincible
     }
     public void setHP(int hp)
     {this.hp=hp;}
+    public void heal(int hp)
+    {this.hp+=hp;}
+    public void setSpeedModifier(double modifier)
+    {speedModifier=modifier;}
+    public void changeSpeedModifier(double modifier)
+    {speedModifier+=modifier;}
 }
 

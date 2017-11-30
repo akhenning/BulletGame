@@ -122,43 +122,23 @@ public class Graphic {
 			if(type==0)
 			{
 				if(time-70>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[0],x,(int)y,width,height,null);
-				}
+				{g2.drawImage(expImgs[0],x,(int)y,width,height,null);}
 				else if(time-60>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[1],x,(int)y,width,height,null);
-				}
+				{g2.drawImage(expImgs[1],x,(int)y,width,height,null);}
 				else if(time-50>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[2],x,(int)y,width,height,null);
-				}
+				{g2.drawImage(expImgs[2],x,(int)y,width,height,null);}
 				else if(time-40>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[3],x,(int)y,width,height,null);
-				}
+				{g2.drawImage(expImgs[3],x,(int)y,width,height,null);}
 				else if(time-30>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[4],x,(int)y,width,height,null);
-					//g2.drawString("ka", x,(int)y+height/2);
-				}
+				{g2.drawImage(expImgs[4],x,(int)y,width,height,null);}
 				else if(time-20>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[5],x,(int)y,width,height,null);
-				}
+				{g2.drawImage(expImgs[5],x,(int)y,width,height,null);}
 				else if(time-10>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[6],x,(int)y,width,height,null);
-				}
+				{g2.drawImage(expImgs[6],x,(int)y,width,height,null);}
 				else if(time>DrawingPanel.tickCounter)
-				{
-					g2.drawImage(expImgs[7],x,(int)y,width,height,null);
-					//g2.drawString("ka", x,(int)y+height/2);
-				}
+				{g2.drawImage(expImgs[7],x,(int)y,width,height,null);}
 				else
-				{
-					setVisible(false);
-				}
+				{setVisible(false);}
 			}
 			else if (type==-1)
 			{
@@ -186,7 +166,7 @@ public class Graphic {
 	}
 	public void draw(Graphics2D g2,int v)
 	{
-		System.out.println(font);
+		
 		if(type!=-1)
 		{
 			System.out.println("invalid type/incorrect draw function called.");
@@ -196,8 +176,8 @@ public class Graphic {
 			if(img!=null) {
 				g2.drawImage(selectedButton,x-15,(int)y-((height*2)/3),width,height,null);
 			}
-			if(width<fonts.length)
-				g2.setFont(fonts[width]);
+			g2.setColor(color);
+			g2.setFont(fonts[font]);
 			for (int i=0;i<text.length;i++)
 			{
 				g2.drawString(text[i], x,(int)y+(i*40));
@@ -291,6 +271,8 @@ public class Graphic {
 	{
 		visible=(!visible);
 	}
+	public void setColor(Color c)
+	{color=c;}
 	
 	
 	

@@ -30,6 +30,7 @@ public class DrawingPanel extends JPanel
     private Graphic splashes=new Graphic(1,1);
     private long[] screenDark= {0,0};//0 is counter, 1 is fade time.
     private ArrayList<Integer> equipped=new ArrayList<Integer>(); 
+    private float[] fireModifiers= {1,1,1};
     private boolean isShift=false;
     private int isLeft=0;
     private int isRight=0;
@@ -48,6 +49,7 @@ public class DrawingPanel extends JPanel
     public static final int SCREEN_WIDTH=725;//?
     public static double WIND_EFFECT=.5;
     public boolean[] isPaused= {false,false};
+    //public static String[] saveFile={"points","equipped","modifiers","level"};
     
         
     public DrawingPanel()
@@ -174,7 +176,6 @@ public class DrawingPanel extends JPanel
 		        	
 		        }
 		        else {repaint();
-		        System.out.println("Eyyo----------------------------");
 		        try {
 	                Thread.sleep(300);                 //same
 	            } catch(InterruptedException ex) {
@@ -408,7 +409,7 @@ public class DrawingPanel extends JPanel
 				 		}
 				 	}
 			 	}
-        		if(isShooting)
+        		if(isShooting&&tickCounter>250)
         		{
         			if(selectableUI[selected].getActionID()==0)
         				System.exit(0);
@@ -433,8 +434,8 @@ public class DrawingPanel extends JPanel
         			coolUI=tickCounter+20;
 			 		selected++;
 			 		if(selected>selectableUI.length-1)
-		 		{
-		 			selected=0;
+			 		{
+			 			selected=0;
 			 		}
 			 	}
 			 	else if ((isUp+isDown)<0)
@@ -447,13 +448,39 @@ public class DrawingPanel extends JPanel
 			 		}
 			 	}
 		 	}
-       		if(isShooting)
+       		if(isShooting)//TODO button config
        		{
        			if(points-selectableUI[selected].getNum()>0)
        			{
-       				//if(selectableUI[selected].getActionID()==0)
+       				if(selectableUI[selected].getActionID()==3)
+       				{
+       					points-=selectableUI[selected].getNum();
+       					fireModifiers[0]=(float) .5;      					
+       				}
+       				else if(selectableUI[selected].getActionID()==4)
+       				{
+       					points-=selectableUI[selected].getNum();
+       					if(equipped.size()>1)
+       						equipped.set(1, 1);     					
+       					else
+       						equipped.add(1);
+       				}
+       				else if(selectableUI[selected].getActionID()==5)
+       				{
+       					points-=selectableUI[selected].getNum();
+       					equipped.set(0, 2);     					
+       				}
+       				else if(selectableUI[selected].getActionID()==5)
+       				{
+       					points-=selectableUI[selected].getNum();
+       					equipped.set(0, 4);     					
+       				}
        				selectableUI=null;
        				finishLevel(false);
+       			}
+       			else
+       			{
+       				tempGraphics[5].setColor(Color.RED);//looks kinda ugly
        			}
        		}
     	}
@@ -469,18 +496,28 @@ public class DrawingPanel extends JPanel
     	        	if(powerups[i]!=null)
     	        	{
     	        		powerups[i].calcXY();
-    	        		if (equipped.size()<=AttackInfo.NUMBER_AVALIABLE_PROJS && player.isHit(powerups[i]))
+//    	        		if (equipped.size()<=AttackInfo.NUMBER_AVALIABLE_PROJS && player.isHit(powerups[i]))
+//    	        		{
+//    	        			boolean add=true;
+//    	        			for(Integer ingr:equipped)
+//    	        			{
+//    	        				if(ingr==powerups[i].getAttackPower())
+//    	        					powerups[i].recalculateType(powerups[i].getAttackPower());
+//    	        				if(ingr==powerups[i].getAttackPower())
+//    	        					add=false;
+//    	        			}
+//    	        			if(add)
+//    	        				equipped.add(powerups[i].getAttackPower());
+//    	        			powerups[i]=null;
+//    	        		}
+    	        		if(player.isHit(powerups[i]))
     	        		{
-    	        			boolean add=true;
-    	        			for(Integer ingr:equipped)
+    	        			if(powerups[i].getAttackPower()==0)
+    	        			{player.heal(1);}
+    	        			else if(powerups[i].getAttackPower()<5)
     	        			{
-    	        				if(ingr==powerups[i].getAttackPower())
-    	        					powerups[i].recalculateType(powerups[i].getAttackPower());
-    	        				if(ingr==powerups[i].getAttackPower())
-    	        					add=false;
+    	        				player.changeSpeedModifier(.1);
     	        			}
-    	        			if(add)
-    	        				equipped.add(powerups[i].getAttackPower());
     	        			powerups[i]=null;
     	        		}
     	        		else if(powerups[i].getY()>LOWER_BOUNDS+30)
@@ -633,12 +670,20 @@ public class DrawingPanel extends JPanel
     	{
     		for (int j=0;j<equipped.size();j++)
     		{
-    			if (tickCounter%AttackInfo.getReloadTime(equipped.get(j))==0)
-    			{
-    				Proj[] projs=AttackInfo.getPAttack(equipped.get(j));
-    				for (int i=0;i<projs.length;i++)
-    					playerProjs.add(projs[i]);
-    			}
+    			if(j<fireModifiers.length) {
+	    			if (tickCounter%(AttackInfo.getReloadTime(equipped.get(j))*fireModifiers[j])==0)
+	    			{
+	    				Proj[] projs=AttackInfo.getPAttack(equipped.get(j));
+	    				for (int i=0;i<projs.length;i++)
+	    					playerProjs.add(projs[i]);
+	    			}
+	    		} else {
+        			if (tickCounter%AttackInfo.getReloadTime(equipped.get(j))==0)
+        			{
+        				Proj[] projs=AttackInfo.getPAttack(equipped.get(j));
+        				for (int i=0;i<projs.length;i++)
+        					playerProjs.add(projs[i]);
+        			}}
     		}
     	}
 
@@ -684,7 +729,7 @@ public class DrawingPanel extends JPanel
         selectableUI=null;
         background[0]=null;
         background[1]=null;
-       	System.out.println(currentLevel);
+        selected=0;//selectableUI.length-1;
         if(currentLevel==-1)
         {
         	selectableUI=new Graphic[2];
@@ -723,9 +768,11 @@ public class DrawingPanel extends JPanel
         	//enemies.add(new MobileEnemy(new Point2D.Double(200, -100),150,3));	
         }   else if(currentLevel<-1) {
         	selectableUI=new Graphic[4];
-        	tempGraphics=new Graphic[5];
+        	tempGraphics=new Graphic[6];
         	tempGraphics[0]=new Graphic("Select upgrade.",false);
         	tempGraphics[0].setPlace(LEFT_BOUNDS+200, 75);
+        	tempGraphics[5]=new Graphic("Current points: "+points,false);
+        	tempGraphics[5].setPlace(LEFT_BOUNDS+100, 600);
         	
            	selectableUI[3]=new Graphic(0,"Point cost: 500",0,3);
         	selectableUI[3].setPlace(LEFT_BOUNDS+50, 200);
@@ -747,16 +794,17 @@ public class DrawingPanel extends JPanel
         	
         	selectableUI[0]=new Graphic(0,"Point cost: 1500",0,6);
         	selectableUI[0].setPlace(LEFT_BOUNDS+50, 500);
-        	selectableUI[0].setNum(1000);
+        	selectableUI[0].setNum(1500);
         	tempGraphics[4]=new Graphic("Set primary to wave shot",false);
         	tempGraphics[4].setPlace(LEFT_BOUNDS+300, 500);
+        	selected=selectableUI.length-1;
         }
         if(background[0]!=null)
         {
         	background[0].setPlace(0,0);
         	background[1].setPlace(0,0);
         }
-        selected=0;//selectableUI.length-1;
+        
     }
     public void levelProgress()
     {

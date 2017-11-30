@@ -18,7 +18,7 @@ class Powerup implements Collidable
     	x=source.getX();
     	y=source.getY();
     	radius=15;
-        type=(int)(Math.random()*AttackInfo.NUMBER_AVALIABLE_PROJS);//change depending on # of avaliable items or liklihood
+        type=(int)(Math.random()*5);//(int)(Math.random()*AttackInfo.NUMBER_AVALIABLE_PROJS);//change depending on # of avaliable items or liklihood
     }
     public void calcXY()    
     {
@@ -26,6 +26,7 @@ class Powerup implements Collidable
     }
     public void draw(Graphics2D g2)
     {   
+    	g2.drawString(Integer.toString(type), (int)x,(int)(y-radius));
     	if(DrawingPanel.tickCounter%32<16) color=Color.BLUE;
     	else color=Color.CYAN;
     	
